@@ -8,8 +8,6 @@ import ru.mail.park.model.UserProfile;
 import ru.mail.park.services.AccountService;
 import ru.mail.park.services.SessionService;
 
-import javax.servlet.http.HttpSession;
-
 /**
  * Created by Solovyev on 06/09/16.
  */
@@ -26,17 +24,13 @@ public class RegistrationController {
         this.sessionService = sessionService;
     }
 
-    @RequestMapping(path = "/api/registration", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity login(@RequestBody RegistrationRequest body,
-                                HttpSession httpSession) {
-
-        final String sessionId = httpSession.getId(); //todo dafaq this need to be here?
+    @RequestMapping(path = "/registration", method = RequestMethod.POST)
+    public ResponseEntity login(@RequestBody RegistrationRequest body) {
 
         final String login = body.getLogin();
         final String password = body.getPassword();
         final String email = body.getEmail();
 
-        //todo create throw exception thing
         final Validator validator = new Validator(login, password, email);
 
         if (!validator.isValid()) {
@@ -45,21 +39,19 @@ public class RegistrationController {
 
         final UserProfile existingUser = accountService.getUser(login);
         if (existingUser != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("{ User already exists }");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"User already exists\"}");
         }
 
         accountService.addUser(login, password, email);
         return ResponseEntity.ok(new SuccessResponse(login));
     }
 
-    @RequestMapping(path = "/api/auth", method = RequestMethod.POST)
-    public ResponseEntity auth(@RequestBody AuthorizationRequest body,
-                               HttpSession httpSession) {
+    @RequestMapping(path = "/auth", method = RequestMethod.POST)
+    public ResponseEntity auth(@RequestBody AuthorizationRequest body) {
 
         final String login = body.getLogin();
         final String password = body.getPassword();
 
-        //todo throw exception thing and validation
         final Validator validator = new Validator(login, password);
 
         if (!validator.isValid()) {
@@ -67,12 +59,11 @@ public class RegistrationController {
         }
 
         final UserProfile user = accountService.getUser(login);
-        sessionService.addUser(httpSession.getId(), user);
 
         if (user != null && user.getPassword().equals(password)) {
             return ResponseEntity.ok(new SuccessResponse(user.getLogin()));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{ Wrong login or password. }");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Wrong login or password.\"}");
     }
 
     private static final class AuthorizationRequest {
