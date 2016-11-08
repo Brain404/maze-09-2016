@@ -1,20 +1,19 @@
 package ru.mail.park;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * Created by Solovyev on 06/09/16.
+ * Created by kirrok on 06/09/16.
  */
 @SpringBootApplication
 public class Application {
-    public static final Logger logger = LogManager.getLogger(Application.class);
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -28,6 +27,11 @@ public class Application {
                 registry.addMapping("/**").allowedOrigins("*").allowedMethods("OPTIONS","POST","GET", "DELETE","PUT");
             }
         };
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 
 }

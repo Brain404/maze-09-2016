@@ -1,19 +1,26 @@
 package ru.mail.park.services;
 
-import ru.mail.park.dataSets.UserDataSet;
+import ru.mail.park.models.User;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by kirrok on 21.10.16.
  */
 public interface AccountService {
-    Long addUser(UserDataSet user);
 
-    void deleteUser(long id);
+    Long addUser(User user);
 
-    void updateUser(UserDataSet user);
+    void deleteUser(Long user);
 
-    UserDataSet getUserByLogin(String email);
+    void updateUser(User user);
 
-    UserDataSet getUserById(long id);
+    User getUserByLogin(String login);
 
+    User getUserById(long id);
+
+    List<Map<String, Object>> score(String limit);
+
+    boolean passwordIsCorrect(User user, String password);
 }
